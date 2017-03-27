@@ -23,7 +23,7 @@ get_header(); ?>
                     <div class="title_box"><h3><a href="<?php echo get_site_url() ?>/category/bai-viet-moi-nhat">Bài viết mới nhất</a></h3></div>
                     <div class="content_box">
                         <div class="block_news width_common">
-                            <?php $the_query = new WP_Query('posts_per_page=3');
+                            <?php $the_query = new WP_Query( array( 'category__not_in' => SLIDERIGHT, 'posts_per_page' => 3 ) );
                             $stt = 0; ?>
                             <?php if (have_posts()):while ($the_query->have_posts()) :
                             $the_query->the_post();
@@ -65,14 +65,19 @@ get_header(); ?>
                 </div>
 
                 <?php global $post;
-                $args = array('posts_per_page' => 3, 'order' => 'DESC', 'orderby' => 'post_date', 'category' => TINXEMNHIEU);
-                $category = get_term(TINXEMNHIEU, 'category');
-                $category_link = get_category_link(TINXEMNHIEU); $postslist = get_posts($args);
+                $args    = array(
+                    'numberposts' => 3,  /* get 4 posts, or set -1 to display all posts */
+                    'orderby'     => 'meta_value',  /* this will look at the meta_key you set below */
+                    'meta_key'    => 'post_views_count',
+                    'order'       => 'DESC',
+                    'post_type'   => 'post',
+                    'post_status' => 'publish'
+                );
+                $postslist = get_posts( $args );
                 $stt = 0; ?>
                 <div id="box_tinxemnhieu" class="col-lg-4 col-md-4 col-sm-4 col-xs-6 col-tn-12 space_bottom_10">
-                    <?php if(count($postslist)>0){  ?> <div class="title_box"><h3><a
-                                    href="<?php echo esc_url($category_link); ?>"><?php echo $category->name ?></a>
-                        </h3></div> <?php } ?>
+                    <div class="title_box"><h3><a href="<?php echo get_site_url() ?>/category/tin-xem-nhieu" >Tin Xem Nhiều</a>
+                        </h3></div>
                     <div class="content_box">
                         <div class="block_news width_common">
 
@@ -97,7 +102,7 @@ get_header(); ?>
                                         <a class="thunb_image thumb_5x3" href="<?php echo get_permalink() ?>"><?php the_post_thumbnail() ?></a>
                                     </div>
                                     <h2 class="title_box_news">
-                                        <a href="<?php echo get_permalink() ?>"><?php the_title() ?></a>
+                                        <a href="<?php echo get_permalink() ?>" class="four-lines"><?php the_title() ?></a>
                                     </h2>
                                 </div>
                             <?php }
@@ -107,7 +112,7 @@ get_header(); ?>
                         </div>
 
                         <div class="block_xemthem text-center">
-                            <a href="<?php echo esc_url($category_link); ?>" class="txt_666"><i
+                            <a href="<?php echo get_site_url() ?>/category/tin-xem-nhieu" class="txt_666"><i
                                         class="fa fa-caret-down"></i> Xem thêm</a>
                         </div>
                     </div>
@@ -179,60 +184,62 @@ get_header(); ?>
                     $args = array('posts_per_page' => 3, 'order' => 'DESC', 'orderby' => 'post_date', 'category' => KIENTHUCBENHHOC);
                     $category = get_term(KIENTHUCBENHHOC, 'category');
                     $link_cate = get_category_parents_custom( KIENTHUCBENHHOC, true, '' ); ?>
-                    <div id="box_kienthuc_mankinh" class="box_common_site">
+                    <div id="box_kienthuc_benhhoc" class="box_common_site">
                         <div class="title_box_common">
                             <?php if(isset($category)){ ?>
-                            <h3 class="wap_title_box relative">
-                                <img src="<?php echo get_theme_file_uri(); ?>/assets/images/icon/ico_sach.png"
-                                     class="icon_title">
-                                <a class="text_title_box"
-                                   href="<?php echo $link_cate; ?>"><?php echo $category->name; ?></a>
-                            </h3>
+                                <h3 class="wap_title_box relative">
+                                    <img src="<?php echo get_theme_file_uri(); ?>/assets/images/icon/ico_sach.png"
+                                         class="icon_title">
+                                    <a class="text_title_box"
+                                       href="<?php echo $link_cate; ?>"><?php echo $category->name; ?></a>
+                                </h3>
                             <?php } ?>
                         </div>
 
                         <?php $list_cate = getChildCate(KIENTHUCBENHHOC); if(isset($list_cate)){ foreach($list_cate as $item=>$value){  ?>
-                        <?php global $post;
-                        $args = array('posts_per_page' => 3, 'order' => 'DESC', 'orderby' => 'post_date', 'category' => $value);
-                        $category = get_term($value, 'category');
-                        $stt = 0;  $link_cate = get_category_parents_custom( $value, true, '' ); ?>
-                        <div class="item_box_kienthuc">
-                            <?php if(count($postslist)>0){ ?>
-                            <h2 class="block_text_info_box">
-                                <a href="<?php echo $link_cate; ?>"><?php echo $category->name; ?></a>
-                            </h2>
-                            <?php }  ?>
-                            <div class="content_box_common width_common">
-                                <div class="block_news width_common">
+                            <?php global $post;
+                            $args = array('posts_per_page' => 3, 'order' => 'DESC', 'orderby' => 'post_date', 'category' => $value);
+                            $category = get_term($value, 'category');
+                            $stt = 0;  $link_cate = get_category_parents_custom( $value, true, '' );
+                            $postslist = get_posts($args);
+                            ?>
+                            <div class="item_box_kienthuc">
+                                <?php if(count($postslist)>0){ ?>
+                                    <h2 class="block_text_info_box">
+                                        <a href="<?php echo $link_cate; ?>"><?php echo $category->name; ?></a>
+                                    </h2>
+                                <?php }  ?>
+                                <div class="content_box_common width_common">
                                     <div class="block_news width_common">
-                                    <?php foreach ($postslist as $post) :
-                                    setup_postdata($post);
-                                    if ($stt == 0){ ?>
-                                        <div class="block_thumb_news">
-                                            <a class="thunb_image thumb_5x3" href="<?php the_permalink() ?>"><?php the_post_thumbnail() ?></a>
-                                        </div>
-                                        <h2 class="title_box_news">
-                                            <a href="<?php the_permalink() ?>"><?php the_title() ?></a>
-                                        </h2>
-                                        <h4 class="lead_box_news"><?php the_excerpt(); ?></h4>
-                                    </div>
-                                    <div class="list_sub_news width_common dot_list_sub">
-                                        <?php } else { ?>
-                                            <div class="item_sub_news">
-                                                <h2 class="title_box_news">
-                                                    <a href="<?php the_permalink() ?>"><?php the_title() ?></a>
-                                                </h2>
+                                        <div class="block_news width_common">
+                                            <?php foreach ($postslist as $post) :
+                                            setup_postdata($post);
+                                            if ($stt == 0){ ?>
+                                            <div class="block_thumb_news">
+                                                <a class="thunb_image thumb_5x3" href="<?php the_permalink() ?>"><?php the_post_thumbnail() ?></a>
                                             </div>
-                                        <?php }
-                                        $stt++;
-                                        endforeach;
-                                        wp_reset_postdata(); ?>
+                                            <h2 class="title_box_news">
+                                                <a href="<?php the_permalink() ?>"><?php the_title() ?></a>
+                                            </h2>
+                                            <h4 class="lead_box_news"><?php the_excerpt(); ?></h4>
+                                        </div>
+                                        <div class="list_sub_news width_common dot_list_sub">
+                                            <?php } else { ?>
+                                                <div class="item_sub_news">
+                                                    <h2 class="title_box_news">
+                                                        <a href="<?php the_permalink() ?>"><?php the_title() ?></a>
+                                                    </h2>
+                                                </div>
+                                            <?php }
+                                            $stt++;
+                                            endforeach;
+                                            wp_reset_postdata(); ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                       <?php }} ?>
+                        <?php }} ?>
 
                     </div>
                 </div>
